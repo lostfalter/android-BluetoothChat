@@ -48,10 +48,7 @@ public class MainActivity extends SampleActivityBase {
 
     // Whether the Log Fragment is currently shown
     private boolean mLogShown;
-    private SoundPool soundPool;
-    private Button redButton;
-    private Button yellowButton;
-    private Button greenButton;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,74 +61,9 @@ public class MainActivity extends SampleActivityBase {
             transaction.replace(R.id.sample_content_fragment, fragment);
             transaction.commit();
         }
-
-        setupSoundEffect();
     }
 
-    private void setupSoundEffect() {
-        SoundPool.Builder builder = new SoundPool.Builder();
 
-        //可同时播放的音频流
-        builder.setMaxStreams(10);
-
-        //音频属性的Builder
-        AudioAttributes.Builder attrBuild = new AudioAttributes.Builder();
-
-        //音频类型
-        attrBuild.setLegacyStreamType(AudioManager.STREAM_MUSIC);
-
-        builder.setAudioAttributes(attrBuild.build());
-
-        soundPool = builder.build();
-        soundPool.load(MainActivity.this, R.raw.trigger,1);
-
-        redButton = findViewById(R.id.button_red);
-        yellowButton = findViewById(R.id.button_yellow);
-        greenButton = findViewById(R.id.button_green);
-
-        addSoundEffectToButton(redButton);
-        addSoundEffectToButton(yellowButton);
-        addSoundEffectToButton(greenButton);
-    }
-
-    private void addSoundEffectToButton(Button bt) {
-        bt.setOnTouchListener(new View.OnTouchListener() {
-
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-
-                switch (event.getAction() & MotionEvent.ACTION_MASK) {
-
-                    case MotionEvent.ACTION_DOWN:
-                        v.setPressed(!v.isPressed());
-                        soundPool.play(1,1, 1, 0, 0, 1);
-                        // Start action ...
-                        break;
-                    case MotionEvent.ACTION_UP:
-                    case MotionEvent.ACTION_OUTSIDE:
-                    case MotionEvent.ACTION_CANCEL:
-//                        v.setPressed(false);
-                        // Stop action ...
-                        break;
-                    case MotionEvent.ACTION_POINTER_DOWN:
-                        break;
-                    case MotionEvent.ACTION_POINTER_UP:
-                        break;
-                    case MotionEvent.ACTION_MOVE:
-                        break;
-                }
-
-                return true;
-            }
-        });
-
-//        bt.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                soundPool.play(1,1, 1, 0, 0, 1);
-//            }
-//        });
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

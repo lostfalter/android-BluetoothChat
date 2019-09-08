@@ -21,6 +21,9 @@ import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -32,6 +35,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -60,6 +64,11 @@ public class BluetoothChatFragment extends Fragment {
     private ListView mConversationView;
     private EditText mOutEditText;
     private Button mSendButton;
+
+    private SoundPool soundPool;
+    private Button redButton;
+    private Button yellowButton;
+    private Button greenButton;
 
     /**
      * Name of the connected device
@@ -90,6 +99,8 @@ public class BluetoothChatFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
+        setupSoundEffect();
         // Get local Bluetooth adapter
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
@@ -199,6 +210,81 @@ public class BluetoothChatFragment extends Fragment {
         }
     }
 
+    private void setupSoundEffect() {
+        SoundPool.Builder builder = new SoundPool.Builder();
+
+        //可同时播放的音频流
+        builder.setMaxStreams(10);
+
+        //音频属性的Builder
+        AudioAttributes.Builder attrBuild = new AudioAttributes.Builder();
+
+        //音频类型
+        attrBuild.setLegacyStreamType(AudioManager.STREAM_MUSIC);
+
+        builder.setAudioAttributes(attrBuild.build());
+
+        soundPool = builder.build();
+
+        FragmentActivity activity = getActivity();
+        soundPool.load(activity, R.raw.trigger,1);
+
+        redButton = activity.findViewById(R.id.button_red);
+        yellowButton = activity.findViewById(R.id.button_yellow);
+        greenButton = activity.findViewById(R.id.button_green);
+
+        addSoundEffectToButton(redButton);
+        addSoundEffectToButton(yellowButton);
+        addSoundEffectToButton(greenButton);
+    }
+
+    private void addSoundEffectToButton(Button bt) {
+        bt.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                switch (event.getAction() & MotionEvent.ACTION_MASK) {
+
+                    case MotionEvent.ACTION_DOWN:
+                        v.setPressed(!v.isPressed());
+                        soundPool.play(1,1, 1, 0, 0, 1);
+                        sendMessageWithoutToast(getButtonMessage((Button)v));
+                        // Start action ...
+                        break;
+                    case MotionEvent.ACTION_UP:
+                    case MotionEvent.ACTION_OUTSIDE:
+                    case MotionEvent.ACTION_CANCEL:
+//                        v.setPressed(false);
+                        // Stop action ...
+                        break;
+                    case MotionEvent.ACTION_POINTER_DOWN:
+                        break;
+                    case MotionEvent.ACTION_POINTER_UP:
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        break;
+                }
+
+                return true;
+            }
+
+            private String getButtonMessage(Button bt) {
+                String state = "Unpressed";
+                if (bt.isPressed()) {
+                    state = "Pressed";
+                }
+                return bt.getText().toString() + "_" + state;
+            }
+        });
+
+//        bt.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                soundPool.play(1,1, 1, 0, 0, 1);
+//            }
+//        });
+    }
+
     /**
      * Sends a message.
      *
@@ -208,6 +294,24 @@ public class BluetoothChatFragment extends Fragment {
         // Check that we're actually connected before trying anything
         if (mChatService.getState() != BluetoothChatService.STATE_CONNECTED) {
             Toast.makeText(getActivity(), R.string.not_connected, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Check that there's actually something to send
+        if (message.length() > 0) {
+            // Get the message bytes and tell the BluetoothChatService to write
+            byte[] send = message.getBytes();
+            mChatService.write(send);
+
+            // Reset out string buffer to zero and clear the edit text field
+            mOutStringBuffer.setLength(0);
+            mOutEditText.setText(mOutStringBuffer);
+        }
+    }
+
+    private void sendMessageWithoutToast(String message) {
+        // Check that we're actually connected before trying anything
+        if (mChatService.getState() != BluetoothChatService.STATE_CONNECTED) {
             return;
         }
 
@@ -272,6 +376,82 @@ public class BluetoothChatFragment extends Fragment {
         actionBar.setSubtitle(subTitle);
     }
 
+    private boolean simulateClickButton(String buttonName) {
+        FragmentActivity activity = getActivity();
+        if (null == activity) {
+            return false;
+        }
+
+        if (buttonName.equals("Red_Pressed")) {
+            Button bt = activity.findViewById(R.id.button_red);
+            if (bt != null) {
+                bt.setPressed(true);
+                return true;
+            } else {
+                return false;
+            }
+        } else if (buttonName.equals("Red_Unpressed")) {
+            Button bt = activity.findViewById(R.id.button_red);
+            if (bt != null) {
+                bt.setPressed(false);
+                return true;
+            } else {
+                return false;
+            }
+        } else if (buttonName.equals("Yellow_Pressed")) {
+            Button bt = activity.findViewById(R.id.button_yellow);
+            if (bt != null) {
+                bt.setPressed(true);
+                return true;
+            } else {
+                return false;
+            }
+        } else if (buttonName.equals("Yellow_Unpressed")) {
+            Button bt = activity.findViewById(R.id.button_yellow);
+            if (bt != null) {
+                bt.setPressed(false);
+                return true;
+            } else {
+                return false;
+            }
+        } else if (buttonName.equals("Green_Pressed")) {
+            Button bt = activity.findViewById(R.id.button_green);
+            if (bt != null) {
+                bt.setPressed(true);
+                return true;
+            } else {
+                return false;
+            }
+        } else if (buttonName.equals("Green_Unpressed")) {
+            Button bt = activity.findViewById(R.id.button_green);
+            if (bt != null) {
+                bt.setPressed(false);
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    private boolean isCommandMessage(String message) {
+        if (message != null) {
+            if (message.equals("Red_Pressed") ||
+                message.equals("Red_Unpressed") ||
+                message.equals("Yellow_Pressed") ||
+                message.equals("Yellow_Unpressed") ||
+                message.equals("Green_Pressed") ||
+                message.equals("Green_Unpressed")) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
     /**
      * The Handler that gets information back from the BluetoothChatService
      */
@@ -299,13 +479,22 @@ public class BluetoothChatFragment extends Fragment {
                     byte[] writeBuf = (byte[]) msg.obj;
                     // construct a string from the buffer
                     String writeMessage = new String(writeBuf);
-                    mConversationArrayAdapter.add("Me:  " + writeMessage);
+                    if (isCommandMessage(writeMessage)) {
+                        // command message, do not print it
+                    } else {
+                        mConversationArrayAdapter.add("Me:  " + writeMessage);
+                    }
                     break;
                 case Constants.MESSAGE_READ:
                     byte[] readBuf = (byte[]) msg.obj;
                     // construct a string from the valid bytes in the buffer
                     String readMessage = new String(readBuf, 0, msg.arg1);
-                    mConversationArrayAdapter.add(mConnectedDeviceName + ":  " + readMessage);
+                    if (simulateClickButton(readMessage)) {
+                        // it's a command, do not print it.
+                        soundPool.play(1,1, 1, 0, 0, 1);
+                    } else {
+                        mConversationArrayAdapter.add(mConnectedDeviceName + ":  " + readMessage);
+                    }
                     break;
                 case Constants.MESSAGE_DEVICE_NAME:
                     // save the connected device's name

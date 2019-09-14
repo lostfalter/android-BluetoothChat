@@ -267,6 +267,9 @@ public class BluetoothChatFragment extends Fragment {
                 mTrafficLightTimer.stop();
                 mTrafficLightTimer = null;
 
+                mTrafficLightEngine.stop();
+                mTrafficLightEngine = null;
+
                 int redLightTime = Integer.parseInt(
                     mRedLightTimeoutEditText.getText().toString());
                 int yellowLightTime = Integer.parseInt(
@@ -275,6 +278,7 @@ public class BluetoothChatFragment extends Fragment {
                     mGreenLightTimeoutEditText.getText().toString());
                 mTrafficLightTimer = new TrafficLightTimer(
                     mHandler, redLightTime, yellowLightTime, greenLightTime);
+                mTrafficLightEngine = new TrafficLightEngine(mHandler);
             }
         });
     }
@@ -606,9 +610,11 @@ public class BluetoothChatFragment extends Fragment {
                 case Constants.MESSAGE_REFRESH_TRAFFIC_LIGHT:
                     Log.i(TAG, "Receive refresh traffic light message");
                     refreshTrafficLightImage(msg.arg1);
+                    break;
                 case Constants.MESSAGE_BROADCAST_TRAFFIC_LIGHT_STATE:
                     Log.i(TAG, "Receive broadcast traffic light message");
                     processBroadcastMessage(msg.arg1, msg.arg2);
+                    break;
             }
         }
     };

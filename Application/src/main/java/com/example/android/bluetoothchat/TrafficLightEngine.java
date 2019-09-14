@@ -40,6 +40,16 @@ public class TrafficLightEngine {
         }
     }
 
+    public void stop() {
+        if (mTask != null) {
+            mTask.cancel();
+            mTask = null;
+        }
+
+        mTimer.cancel();
+        mTimer = null;
+    }
+
     private synchronized void notifyCurrentState() {
         Log.i(TAG, "Current state: " + getStateString(mState));
         mHandler.obtainMessage(Constants.MESSAGE_REFRESH_TRAFFIC_LIGHT, mState, -1).sendToTarget();

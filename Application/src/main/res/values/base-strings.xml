@@ -16,7 +16,7 @@
 -->
 
 <resources>
-    <string name="app_name">BluetoothChat</string>
+    <string name="app_name">红绿灯状态服务器</string>
     <string name="intro_message">
         <![CDATA[
         

@@ -14,8 +14,6 @@ public class TrafficLightTimer {
 
     private int mState = STATE_YELLOW;
 
-    private int mRemainTime = 0;
-
     private Handler mHandler;
 
     private Timer mTimer;
@@ -28,7 +26,7 @@ public class TrafficLightTimer {
     private int mYellowLightTime;
     private int mGreenLightTime;
 
-    private long startTime;
+    private long mStartTime;
     public TrafficLightTimer(
         Handler handler, int redLightTime, int yellowLightTime, int greenLightTime) {
         mHandler = handler;
@@ -62,11 +60,12 @@ public class TrafficLightTimer {
 
         notifyState();
     }
+    private boolean first = true;
 
     private int getRemainTimeOnCurrentState() {
         int totalTime = getSwitchTime(mState);
         int elapsedTime = (int)TimeUnit.SECONDS.convert(
-            System.nanoTime() - startTime, TimeUnit.NANOSECONDS);
+            System.nanoTime() - mStartTime, TimeUnit.NANOSECONDS);
 
         return totalTime - elapsedTime;
     }
@@ -108,7 +107,7 @@ public class TrafficLightTimer {
             }
         };
 
-        startTime = System.nanoTime();
+        mStartTime = System.nanoTime();
         mTimer.schedule(mFlipTask, getSwitchTime(mState) * 1000);
     }
 

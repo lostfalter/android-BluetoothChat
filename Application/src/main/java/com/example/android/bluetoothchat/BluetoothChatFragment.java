@@ -73,6 +73,17 @@ public class BluetoothChatFragment extends Fragment {
     private ImageView mTrafficLightImage;
     private TextView mRemainTimeText;
 
+    private Button mRestoreDefaultButton;
+    private Button mResetButton;
+
+    private EditText mRedLightTimeoutEditText;
+    private EditText mYellowLightTimeoutEditText;
+    private EditText mGreenLightTimeoutEditText;
+
+    private final int mDefaultRedLigthTimeout = 30;
+    private final int mDefaultYellowLigthTimeout = 5;
+    private final int mDefaultGreenLigthTimeout = 30;
+
     /**
      * Name of the connected device
      */
@@ -111,8 +122,7 @@ public class BluetoothChatFragment extends Fragment {
 
         setupSoundEffect();
 
-        mTrafficLightImage = getActivity().findViewById(R.id.traffic_light_image);
-        mRemainTimeText = getActivity().findViewById(R.id.label_remained_time_number);
+        setupUIConnection();
 
         // Get local Bluetooth adapter
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -229,6 +239,44 @@ public class BluetoothChatFragment extends Fragment {
             discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
             startActivity(discoverableIntent);
         }
+    }
+
+    private void setupUIConnection() {
+        Activity activity = getActivity();
+        mTrafficLightImage = activity.findViewById(R.id.traffic_light_image);
+        mRemainTimeText = activity.findViewById(R.id.label_remained_time_number);
+
+        mRedLightTimeoutEditText = activity.findViewById(R.id.red_light_time_number);
+        mYellowLightTimeoutEditText = activity.findViewById(R.id.yellow_light_time_number);
+        mGreenLightTimeoutEditText = activity.findViewById(R.id.green_light_time_number);
+
+        mRestoreDefaultButton = activity.findViewById(R.id.button_reset_default_time_setting);
+        mRestoreDefaultButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mRedLightTimeoutEditText.setText(Integer.toString(mDefaultRedLigthTimeout));
+                mYellowLightTimeoutEditText.setText(Integer.toString(mDefaultYellowLigthTimeout));
+                mGreenLightTimeoutEditText.setText(Integer.toString(mDefaultGreenLigthTimeout));
+            }
+        });
+
+        mResetButton = activity.findViewById(R.id.button_apply_time_setting);
+        mResetButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mTrafficLightTimer.stop();
+                mTrafficLightTimer = null;
+
+                int redLightTime = Integer.parseInt(
+                    mRedLightTimeoutEditText.getText().toString());
+                int yellowLightTime = Integer.parseInt(
+                    mYellowLightTimeoutEditText.getText().toString());
+                int greenLightTime = Integer.parseInt(
+                    mGreenLightTimeoutEditText.getText().toString());
+                mTrafficLightTimer = new TrafficLightTimer(
+                    mHandler, redLightTime, yellowLightTime, greenLightTime);
+            }
+        });
     }
 
     private void setupSoundEffect() {

@@ -97,6 +97,8 @@ public class BluetoothChatFragment extends Fragment {
 
     private TrafficLightEngine mTrafficLightEngine = null;
 
+    private TTSProvider mTTSProvider = null;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,6 +116,8 @@ public class BluetoothChatFragment extends Fragment {
         }
 
         mTrafficLightEngine = new TrafficLightEngine(mHandler);
+
+        mTTSProvider = new TTSProvider(getActivity());
     }
 
 
@@ -136,6 +140,10 @@ public class BluetoothChatFragment extends Fragment {
         super.onDestroy();
         if (mChatService != null) {
             mChatService.stop();
+        }
+
+        if (mTTSProvider != null) {
+            mTTSProvider.stop();
         }
     }
 
@@ -522,6 +530,7 @@ public class BluetoothChatFragment extends Fragment {
                             if (ok) {
                                 Log.i(TAG, "Simulate red light successfully");
                                 playPressSound();
+                                mTTSProvider.prompt("红---灯");
                             }
                             break;
                         case TrafficLightEngine.STATE_YELLOW:
@@ -531,6 +540,7 @@ public class BluetoothChatFragment extends Fragment {
                             if (ok) {
                                 Log.i(TAG, "Simulate yellow light successfully");
                                 playPressSound();
+                                mTTSProvider.prompt("黄---灯");
                             }
                             break;
                         case TrafficLightEngine.STATE_GREEN:
@@ -540,6 +550,7 @@ public class BluetoothChatFragment extends Fragment {
                             if (ok) {
                                 Log.i(TAG, "Simulate green light successfully");
                                 playPressSound();
+                                mTTSProvider.prompt("绿---灯");
                             }
                             break;
                     }

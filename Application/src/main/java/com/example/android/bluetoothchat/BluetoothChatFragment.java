@@ -65,7 +65,6 @@ public class BluetoothChatFragment extends Fragment {
     private EditText mOutEditText;
     private Button mSendButton;
 
-    private SoundPool soundPool;
     private Button redButton;
     private Button yellowButton;
     private Button greenButton;
@@ -97,7 +96,7 @@ public class BluetoothChatFragment extends Fragment {
 
     private TrafficLightEngine mTrafficLightEngine = null;
 
-    private TTSProvider mTTSProvider = null;
+    private VoiceService mVoiceService = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -116,8 +115,6 @@ public class BluetoothChatFragment extends Fragment {
         }
 
         mTrafficLightEngine = new TrafficLightEngine(mHandler);
-
-        mTTSProvider = new TTSProvider(getActivity());
     }
 
 
@@ -142,8 +139,8 @@ public class BluetoothChatFragment extends Fragment {
             mChatService.stop();
         }
 
-        if (mTTSProvider != null) {
-            mTTSProvider.stop();
+        if (mVoiceService != null) {
+            mVoiceService.stop();
         }
     }
 
@@ -223,23 +220,8 @@ public class BluetoothChatFragment extends Fragment {
     }
 
     private void setupSoundEffect() {
-        SoundPool.Builder builder = new SoundPool.Builder();
-
-        //可同时播放的音频流
-        builder.setMaxStreams(10);
-
-        //音频属性的Builder
-        AudioAttributes.Builder attrBuild = new AudioAttributes.Builder();
-
-        //音频类型
-        attrBuild.setLegacyStreamType(AudioManager.STREAM_MUSIC);
-
-        builder.setAudioAttributes(attrBuild.build());
-
-        soundPool = builder.build();
-
         FragmentActivity activity = getActivity();
-        soundPool.load(activity, R.raw.trigger,1);
+        mVoiceService = new VoiceService(activity, false);
 
         redButton = activity.findViewById(R.id.button_red);
         yellowButton = activity.findViewById(R.id.button_yellow);
@@ -259,7 +241,7 @@ public class BluetoothChatFragment extends Fragment {
 
                     case MotionEvent.ACTION_DOWN:
                         v.setPressed(!v.isPressed());
-                        soundPool.play(1,1, 1, 0, 0, 1);
+                        mVoiceService.play(VoiceService.PRESS);
                         sendMessageWithoutToast(getButtonMessage((Button)v));
                         // Start action ...
                         break;
@@ -457,10 +439,6 @@ public class BluetoothChatFragment extends Fragment {
         }
     }
 
-    private void playPressSound() {
-        soundPool.play(1,1, 1, 0, 0, 1);
-    }
-
     /**
      * The Handler that gets information back from the BluetoothChatService
      */
@@ -500,7 +478,7 @@ public class BluetoothChatFragment extends Fragment {
                     String readMessage = new String(readBuf, 0, msg.arg1);
                     if (simulateClickButton(readMessage)) {
                         // it's a command, do not print it.
-                        playPressSound();
+                        mVoiceService.play(VoiceService.PRESS);
                     } else {
                         mConversationArrayAdapter.add(mConnectedDeviceName + ":  " + readMessage);
                     }
@@ -529,8 +507,7 @@ public class BluetoothChatFragment extends Fragment {
                             ok = ok && simulateClickButton("Green_Pressed");
                             if (ok) {
                                 Log.i(TAG, "Simulate red light successfully");
-                                playPressSound();
-                                mTTSProvider.prompt("红---灯");
+                                mVoiceService.play(VoiceService.RED_LIGHT);
                             }
                             break;
                         case TrafficLightEngine.STATE_YELLOW:
@@ -539,8 +516,7 @@ public class BluetoothChatFragment extends Fragment {
                             ok = ok && simulateClickButton("Green_Pressed");
                             if (ok) {
                                 Log.i(TAG, "Simulate yellow light successfully");
-                                playPressSound();
-                                mTTSProvider.prompt("黄---灯");
+                                mVoiceService.play(VoiceService.YELLOW_LIGHT);
                             }
                             break;
                         case TrafficLightEngine.STATE_GREEN:
@@ -549,8 +525,7 @@ public class BluetoothChatFragment extends Fragment {
                             ok = ok && simulateClickButton("Green_Unpressed");
                             if (ok) {
                                 Log.i(TAG, "Simulate green light successfully");
-                                playPressSound();
-                                mTTSProvider.prompt("绿---灯");
+                                mVoiceService.play(VoiceService.GREEN_LIGHT);
                             }
                             break;
                     }

@@ -20,6 +20,14 @@
     android:layout_height="match_parent"
     android:id="@+id/sample_main_layout">
 
+    <!-- Dummy item to prevent AutoCompleteTextView from receiving focus -->
+    <LinearLayout
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:layout_width="0px"
+        android:layout_height="0px"/>
+
+
 
     <LinearLayout
     android:orientation="vertical"
@@ -68,19 +76,197 @@
 
     </LinearLayout>
 
-    <View
-          android:layout_width="match_parent"
-          android:layout_height="1dp"
-          android:background="@android:color/darker_gray" />
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        android:gravity="center"
+        android:id="@+id/parameter_control_panel">
+
+        <LinearLayout
+            android:id="@+id/red_light_setting_line"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:layout_height="50dp"
+            android:layout_width="match_parent"
+            android:layout_marginTop="20dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent">
+        <TextView
+            android:id="@+id/label_red_light_time"
+            android:text="红灯时长："
+            android:textColor="#000000"
+            android:textSize="18sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginLeft="20dp"/>
+
+        <EditText
+            android:id="@+id/red_light_time_number"
+            android:hint="请输入红灯时长"
+            android:text="30"
+            android:maxLength="10"
+            android:gravity="center"
+            android:inputType="number"
+            android:textColor="#000000"
+            android:textSize="18sp"
+            android:paddingTop="0dp"
+            android:digits="0123456789"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/label_red_light_time"
+            app:layout_constraintLeft_toRightOf="@id/label_red_light_time"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginRight="20dp"/>
+
+        <TextView
+            android:id="@+id/label_red_light_time_unit"
+            android:text="秒"
+            android:textColor="#000000"
+            android:textSize="18sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginRight="20dp"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/yellow_light_setting_line"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_height="50dp"
+            android:layout_width="match_parent"
+            android:layout_marginTop="20dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent">
+            <TextView
+                android:id="@+id/label_yellow_light_time"
+                android:text="黄灯时长："
+                android:textColor="#000000"
+                android:textSize="18sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:layout_marginLeft="20dp"/>
+
+            <EditText
+                android:id="@+id/yellow_light_time_number"
+                android:hint="请输入黄灯时长"
+                android:text="5"
+                android:maxLength="10"
+                android:gravity="center"
+                android:inputType="number"
+                android:textColor="#000000"
+                android:textSize="18sp"
+                android:paddingTop="0dp"
+                android:digits="0123456789"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@id/label_yellow_light_time"
+                app:layout_constraintLeft_toRightOf="@id/label_yellow_light_time"
+                app:layout_constraintRight_toRightOf="parent"
+                android:layout_marginRight="20dp"/>
+
+            <TextView
+                android:id="@+id/label_yellow_light_time_unit"
+                android:text="秒"
+                android:textColor="#000000"
+                android:textSize="18sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:layout_marginRight="20dp"/>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/green_light_setting_line"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_height="50dp"
+            android:layout_width="match_parent"
+            android:layout_marginTop="20dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent">
+            <TextView
+                android:id="@+id/label_green_light_time"
+                android:text="绿灯时长："
+                android:textColor="#000000"
+                android:textSize="18sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:layout_marginLeft="20dp"/>
+
+            <EditText
+                android:id="@+id/green_light_time_number"
+                android:hint="请输入绿灯时长"
+                android:text="30"
+                android:maxLength="10"
+                android:gravity="center"
+                android:inputType="number"
+                android:textColor="#000000"
+                android:textSize="18sp"
+                android:paddingTop="0dp"
+                android:digits="0123456789"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@id/label_green_light_time"
+                app:layout_constraintLeft_toRightOf="@id/label_green_light_time"
+                app:layout_constraintRight_toRightOf="parent"
+                android:layout_marginRight="20dp"/>
+
+            <TextView
+                android:id="@+id/label_green_light_time_unit"
+                android:text="秒"
+                android:textColor="#000000"
+                android:textSize="18sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:layout_marginRight="20dp"/>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/button_reset_default_time_setting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="恢复默认值"
+            android:background="@drawable/gray_button_style"
+            app:layout_constraintTop_toBottomOf="@id/button_yellow"
+            android:layout_marginTop="20dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"/>
+
+        <Button
+            android:id="@+id/button_apply_time_setting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="应用&amp;重启"
+            android:background="@drawable/green_button_style"
+            app:layout_constraintTop_toBottomOf="@id/button_yellow"
+            android:layout_marginTop="20dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"/>
+
+    </LinearLayout>
+
 
     <FrameLayout
           android:id="@+id/sample_content_fragment"
           android:layout_weight="2"
           android:layout_width="match_parent"
           android:layout_height="0px" >
-
     </FrameLayout>
-
 
 
 </LinearLayout>

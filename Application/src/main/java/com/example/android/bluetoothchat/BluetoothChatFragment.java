@@ -27,6 +27,7 @@ import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -42,6 +43,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -65,9 +67,11 @@ public class BluetoothChatFragment extends Fragment {
 //    private EditText mOutEditText;
 //    private Button mSendButton;
 
-    private Button redButton;
-    private Button yellowButton;
-    private Button greenButton;
+//    private Button redButton;
+//    private Button yellowButton;
+//    private Button greenButton;
+    private ImageView mTrafficLightImage;
+    private TextView mRemainTimeText;
 
     /**
      * Name of the connected device
@@ -96,6 +100,8 @@ public class BluetoothChatFragment extends Fragment {
 
     private TrafficLightEngine mTrafficLightEngine = null;
 
+    private TrafficLightTimer mTrafficLightTimer = null;
+
     private VoiceService mVoiceService = null;
 
     @Override
@@ -104,6 +110,10 @@ public class BluetoothChatFragment extends Fragment {
         setHasOptionsMenu(true);
 
         setupSoundEffect();
+
+        mTrafficLightImage = getActivity().findViewById(R.id.traffic_light_image);
+        mRemainTimeText = getActivity().findViewById(R.id.label_remained_time_number);
+
         // Get local Bluetooth adapter
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
@@ -113,6 +123,8 @@ public class BluetoothChatFragment extends Fragment {
             Toast.makeText(activity, "Bluetooth is not available", Toast.LENGTH_LONG).show();
             activity.finish();
         }
+
+        mTrafficLightTimer = new TrafficLightTimer(mHandler, 30, 3, 30);
 
         mTrafficLightEngine = new TrafficLightEngine(mHandler);
     }
@@ -223,54 +235,54 @@ public class BluetoothChatFragment extends Fragment {
         FragmentActivity activity = getActivity();
         mVoiceService = new VoiceService(activity, false);
 
-        redButton = activity.findViewById(R.id.button_red);
-        yellowButton = activity.findViewById(R.id.button_yellow);
-        greenButton = activity.findViewById(R.id.button_green);
-
-        addSoundEffectToButton(redButton);
-        addSoundEffectToButton(yellowButton);
-        addSoundEffectToButton(greenButton);
+//        redButton = activity.findViewById(R.id.button_red);
+//        yellowButton = activity.findViewById(R.id.button_yellow);
+//        greenButton = activity.findViewById(R.id.button_green);
+//
+//        addSoundEffectToButton(redButton);
+//        addSoundEffectToButton(yellowButton);
+//        addSoundEffectToButton(greenButton);
     }
 
-    private void addSoundEffectToButton(Button bt) {
-        bt.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-
-                switch (event.getAction() & MotionEvent.ACTION_MASK) {
-
-                    case MotionEvent.ACTION_DOWN:
-                        v.setPressed(!v.isPressed());
-                        mVoiceService.play(VoiceService.PRESS);
-                        sendMessageWithoutToast(getButtonMessage((Button)v));
-                        // Start action ...
-                        break;
-                    case MotionEvent.ACTION_UP:
-                    case MotionEvent.ACTION_OUTSIDE:
-                    case MotionEvent.ACTION_CANCEL:
-//                        v.setPressed(false);
-                        // Stop action ...
-                        break;
-                    case MotionEvent.ACTION_POINTER_DOWN:
-                        break;
-                    case MotionEvent.ACTION_POINTER_UP:
-                        break;
-                    case MotionEvent.ACTION_MOVE:
-                        break;
-                }
-
-                return true;
-            }
-
-            private String getButtonMessage(Button bt) {
-                String state = "Unpressed";
-                if (bt.isPressed()) {
-                    state = "Pressed";
-                }
-                return bt.getText().toString() + "_" + state;
-            }
-        });
-    }
+//    private void addSoundEffectToButton(Button bt) {
+//        bt.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//
+//                switch (event.getAction() & MotionEvent.ACTION_MASK) {
+//
+//                    case MotionEvent.ACTION_DOWN:
+//                        v.setPressed(!v.isPressed());
+//                        mVoiceService.play(VoiceService.PRESS);
+//                        sendMessageWithoutToast(getButtonMessage((Button)v));
+//                        // Start action ...
+//                        break;
+//                    case MotionEvent.ACTION_UP:
+//                    case MotionEvent.ACTION_OUTSIDE:
+//                    case MotionEvent.ACTION_CANCEL:
+////                        v.setPressed(false);
+//                        // Stop action ...
+//                        break;
+//                    case MotionEvent.ACTION_POINTER_DOWN:
+//                        break;
+//                    case MotionEvent.ACTION_POINTER_UP:
+//                        break;
+//                    case MotionEvent.ACTION_MOVE:
+//                        break;
+//                }
+//
+//                return true;
+//            }
+//
+//            private String getButtonMessage(Button bt) {
+//                String state = "Unpressed";
+//                if (bt.isPressed()) {
+//                    state = "Pressed";
+//                }
+//                return bt.getText().toString() + "_" + state;
+//            }
+//        });
+//    }
 
     /**
      * Sends a message.
@@ -363,62 +375,113 @@ public class BluetoothChatFragment extends Fragment {
         actionBar.setSubtitle(subTitle);
     }
 
-    private boolean simulateClickButton(String buttonName) {
-        FragmentActivity activity = getActivity();
-        if (null == activity) {
-            return false;
-        }
+//    private boolean simulateClickButton(String buttonName) {
+//        FragmentActivity activity = getActivity();
+//        if (null == activity) {
+//            return false;
+//        }
+//
+//        if (buttonName.equals("Red_Pressed")) {
+//            Button bt = activity.findViewById(R.id.button_red);
+//            if (bt != null) {
+//                bt.setPressed(true);
+//                return true;
+//            } else {
+//                return false;
+//            }
+//        } else if (buttonName.equals("Red_Unpressed")) {
+//            Button bt = activity.findViewById(R.id.button_red);
+//            if (bt != null) {
+//                bt.setPressed(false);
+//                return true;
+//            } else {
+//                return false;
+//            }
+//        } else if (buttonName.equals("Yellow_Pressed")) {
+//            Button bt = activity.findViewById(R.id.button_yellow);
+//            if (bt != null) {
+//                bt.setPressed(true);
+//                return true;
+//            } else {
+//                return false;
+//            }
+//        } else if (buttonName.equals("Yellow_Unpressed")) {
+//            Button bt = activity.findViewById(R.id.button_yellow);
+//            if (bt != null) {
+//                bt.setPressed(false);
+//                return true;
+//            } else {
+//                return false;
+//            }
+//        } else if (buttonName.equals("Green_Pressed")) {
+//            Button bt = activity.findViewById(R.id.button_green);
+//            if (bt != null) {
+//                bt.setPressed(true);
+//                return true;
+//            } else {
+//                return false;
+//            }
+//        } else if (buttonName.equals("Green_Unpressed")) {
+//            Button bt = activity.findViewById(R.id.button_green);
+//            if (bt != null) {
+//                bt.setPressed(false);
+//                return true;
+//            } else {
+//                return false;
+//            }
+//        } else {
+//            return false;
+//        }
+//    }
 
-        if (buttonName.equals("Red_Pressed")) {
-            Button bt = activity.findViewById(R.id.button_red);
-            if (bt != null) {
-                bt.setPressed(true);
-                return true;
-            } else {
-                return false;
-            }
-        } else if (buttonName.equals("Red_Unpressed")) {
-            Button bt = activity.findViewById(R.id.button_red);
-            if (bt != null) {
-                bt.setPressed(false);
-                return true;
-            } else {
-                return false;
-            }
-        } else if (buttonName.equals("Yellow_Pressed")) {
-            Button bt = activity.findViewById(R.id.button_yellow);
-            if (bt != null) {
-                bt.setPressed(true);
-                return true;
-            } else {
-                return false;
-            }
-        } else if (buttonName.equals("Yellow_Unpressed")) {
-            Button bt = activity.findViewById(R.id.button_yellow);
-            if (bt != null) {
-                bt.setPressed(false);
-                return true;
-            } else {
-                return false;
-            }
-        } else if (buttonName.equals("Green_Pressed")) {
-            Button bt = activity.findViewById(R.id.button_green);
-            if (bt != null) {
-                bt.setPressed(true);
-                return true;
-            } else {
-                return false;
-            }
-        } else if (buttonName.equals("Green_Unpressed")) {
-            Button bt = activity.findViewById(R.id.button_green);
-            if (bt != null) {
-                bt.setPressed(false);
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
+    private void processRemoteMessage(String message) {
+        if (message.equals("#RED#")) {
+            mTrafficLightImage.setImageResource(R.drawable.red_light);
+        } else if (message.equals("#YELLOW#")) {
+            mTrafficLightImage.setImageResource(R.drawable.yellow_light);
+        } else if (message.equals("#GREEN#")) {
+            mTrafficLightImage.setImageResource(R.drawable.green_light);
+        }
+    }
+
+    private void processBroadcastMessage(int type, int remainTime) {
+        switch (type) {
+            case TrafficLightTimer.STATE_RED:
+                mTrafficLightEngine.setState(TrafficLightEngine.STATE_RED);
+                mRemainTimeText.setText(Integer.toString(remainTime));
+                break;
+            case TrafficLightTimer.STATE_YELLOW:
+                mTrafficLightEngine.setState(TrafficLightEngine.STATE_YELLOW);                mRemainTimeText.setText(Integer.toString(remainTime));
+                mRemainTimeText.setText(Integer.toString(remainTime));
+                break;
+            case TrafficLightTimer.STATE_GREEN:
+                mTrafficLightEngine.setState(TrafficLightEngine.STATE_GREEN);
+                mRemainTimeText.setText(Integer.toString(remainTime));
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void refreshTrafficLightImage(int type) {
+        switch (type) {
+            case TrafficLightEngine.STATE_RED:
+                mTrafficLightImage.setImageResource(R.drawable.red_light);
+                mVoiceService.play(VoiceService.RED_LIGHT);
+                Log.i(TAG, "Simulate red light successfully");
+                break;
+            case TrafficLightEngine.STATE_YELLOW:
+                mTrafficLightImage.setImageResource(R.drawable.yellow_light);
+                mVoiceService.play(VoiceService.YELLOW_LIGHT);
+                Log.i(TAG, "Simulate yellow light successfully");
+                break;
+            case TrafficLightEngine.STATE_GREEN:
+                mTrafficLightImage.setImageResource(R.drawable.green_light);
+                mVoiceService.play(VoiceService.GREEN_LIGHT);
+                Log.i(TAG, "Simulate green light successfully");
+                break;
+            default:
+                break;
         }
     }
 
@@ -476,12 +539,7 @@ public class BluetoothChatFragment extends Fragment {
                     byte[] readBuf = (byte[]) msg.obj;
                     // construct a string from the valid bytes in the buffer
                     String readMessage = new String(readBuf, 0, msg.arg1);
-                    if (simulateClickButton(readMessage)) {
-                        // it's a command, do not print it.
-                        mVoiceService.play(VoiceService.PRESS);
-                    } else {
-                        mConversationArrayAdapter.add(mConnectedDeviceName + ":  " + readMessage);
-                    }
+                    processRemoteMessage(readMessage);
                     break;
                 case Constants.MESSAGE_DEVICE_NAME:
                     // save the connected device's name
@@ -497,39 +555,12 @@ public class BluetoothChatFragment extends Fragment {
                                 Toast.LENGTH_SHORT).show();
                     }
                     break;
-                case Constants.MESSAGE_FLIP_TRAFFIC_LIGHT:
-                    Log.i(TAG, "Receive flip message");
-                    boolean ok = true;
-                    switch (msg.arg1) {
-                        case TrafficLightEngine.STATE_RED:
-                            ok = ok && simulateClickButton("Red_Unpressed");
-                            ok = ok && simulateClickButton("Yellow_Pressed");
-                            ok = ok && simulateClickButton("Green_Pressed");
-                            if (ok) {
-                                Log.i(TAG, "Simulate red light successfully");
-                                mVoiceService.play(VoiceService.RED_LIGHT);
-                            }
-                            break;
-                        case TrafficLightEngine.STATE_YELLOW:
-                            ok = ok && simulateClickButton("Red_Pressed");
-                            ok = ok && simulateClickButton("Yellow_Unpressed");
-                            ok = ok && simulateClickButton("Green_Pressed");
-                            if (ok) {
-                                Log.i(TAG, "Simulate yellow light successfully");
-                                mVoiceService.play(VoiceService.YELLOW_LIGHT);
-                            }
-                            break;
-                        case TrafficLightEngine.STATE_GREEN:
-                            ok = ok && simulateClickButton("Red_Pressed");
-                            ok = ok && simulateClickButton("Yellow_Pressed");
-                            ok = ok && simulateClickButton("Green_Unpressed");
-                            if (ok) {
-                                Log.i(TAG, "Simulate green light successfully");
-                                mVoiceService.play(VoiceService.GREEN_LIGHT);
-                            }
-                            break;
-                    }
-
+                case Constants.MESSAGE_REFRESH_TRAFFIC_LIGHT:
+                    Log.i(TAG, "Receive refresh traffic light message");
+                    refreshTrafficLightImage(msg.arg1);
+                case Constants.MESSAGE_BROADCAST_TRAFFIC_LIGHT_STATE:
+                    Log.i(TAG, "Receive broadcast traffic light message");
+                    processBroadcastMessage(msg.arg1, msg.arg2);
             }
         }
     };

@@ -58,34 +58,34 @@ public class VoiceService {
     }
 
     public void play(int type) {
-//        switch (type) {
-//            case RED_LIGHT:
-//                if (mUseTTS) {
-//                    mTTSProvider.prompt("红---灯");
-//                } else {
-//                    playRedLightWav();
-//                }
-//                break;
-//            case YELLOW_LIGHT:
-//                if (mUseTTS) {
-//                    mTTSProvider.prompt("黄---灯");
-//                } else {
-//                    playYellowLightWav();
-//                }
-//                break;
-//            case GREEN_LIGHT:
-//                if (mUseTTS) {
-//                    mTTSProvider.prompt("绿---灯");
-//                } else {
-//                    playGreenLightWav();
-//                }
-//                break;
-//            case PRESS:
-//                playPressEffect();
-//                break;
-//            default:
-//                break;
-//        }
+        switch (type) {
+            case RED_LIGHT:
+                if (mUseTTS) {
+                    mTTSProvider.prompt("红---灯");
+                } else {
+                    playRedLightWav();
+                }
+                break;
+            case YELLOW_LIGHT:
+                if (mUseTTS) {
+                    mTTSProvider.prompt("黄---灯");
+                } else {
+                    playYellowLightWav();
+                }
+                break;
+            case GREEN_LIGHT:
+                if (mUseTTS) {
+                    mTTSProvider.prompt("绿---灯");
+                } else {
+                    playGreenLightWav();
+                }
+                break;
+            case PRESS:
+                playPressEffect();
+                break;
+            default:
+                break;
+        }
     }
 
     public void stop() {

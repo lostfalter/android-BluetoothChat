@@ -11,9 +11,9 @@ public class TrafficLightEngine {
     public static final int STATE_YELLOW = 1;
     public static final int STATE_GREEN = 2;
 
-    private final int mInitialState = STATE_GREEN;
+    public static final int STATE_UNKNOWN = 100;
 
-    private int mState = mInitialState;
+    private int mState = STATE_UNKNOWN;
 
     private Handler mHandler;
 
@@ -26,78 +26,31 @@ public class TrafficLightEngine {
         mTimer = new Timer();
 
         mHandler = handler;
-
-        flip();
     }
 
-    public synchronized int getState() {
-        return mState;
-    }
+    public synchronized void setState(int state) {
+        if (mState != state) {
+            if (mTask != null) {
+                mTask.cancel();
+                mTask = null;
+            }
 
-    public synchronized void reset() {
-        mState = mInitialState;
-
-        flip();
-    }
-
-    private synchronized void flip() {
-        if (mTask != null) {
-            mTask.cancel();
-            mTask = null;
+            mState = state;
+            notifyCurrentState();
         }
-
-        int nextState = getNextState();
-        switchToState(nextState);
-
-        notifyCurrentState();
     }
 
-    private void notifyCurrentState() {
-        Log.i(TAG, "Switch to " + getStateString(mState));
-        mHandler.obtainMessage(Constants.MESSAGE_FLIP_TRAFFIC_LIGHT, mState, -1).sendToTarget();
-    }
-
-    private int getNextState() {
-        int nextState = STATE_GREEN;
-        switch (mState) {
-        case STATE_RED:
-            nextState = STATE_GREEN;
-            break;
-        case STATE_YELLOW:
-            nextState = STATE_RED;
-            break;
-        case STATE_GREEN:
-            nextState = STATE_YELLOW;
-            break;
-        }
-
-        return nextState;
-    }
-
-    private void switchToState(int nextState) {
+    private synchronized void notifyCurrentState() {
+        Log.i(TAG, "Current state: " + getStateString(mState));
+        mHandler.obtainMessage(Constants.MESSAGE_REFRESH_TRAFFIC_LIGHT, mState, -1).sendToTarget();
         mTask = new TimerTask() {
             @Override
             public void run() {
-                flip();
+                notifyCurrentState();
             }
         };
 
-        mTimer.schedule(mTask,getSwitchTime(nextState) * 1000);
-
-        mState = nextState;
-    }
-
-    private int getSwitchTime(int state) {
-        switch (state) {
-            case STATE_RED:
-                return 5;
-            case STATE_YELLOW:
-                return 3;
-            case STATE_GREEN:
-                return 5;
-            default:
-                return 0;
-        }
+        mTimer.schedule(mTask,10 * 1000);
     }
 
     private String getStateString(int state) {

@@ -95,6 +95,8 @@ public class BluetoothChatFragment extends Fragment {
      */
     private BluetoothChatService mChatService = null;
 
+    private TrafficLightEngine mTrafficLightEngine = null;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -110,6 +112,8 @@ public class BluetoothChatFragment extends Fragment {
             Toast.makeText(activity, "Bluetooth is not available", Toast.LENGTH_LONG).show();
             activity.finish();
         }
+
+        mTrafficLightEngine = new TrafficLightEngine(mHandler);
     }
 
 
@@ -276,13 +280,6 @@ public class BluetoothChatFragment extends Fragment {
                 return bt.getText().toString() + "_" + state;
             }
         });
-
-//        bt.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                soundPool.play(1,1, 1, 0, 0, 1);
-//            }
-//        });
     }
 
     /**
@@ -452,6 +449,10 @@ public class BluetoothChatFragment extends Fragment {
         }
     }
 
+    private void playPressSound() {
+        soundPool.play(1,1, 1, 0, 0, 1);
+    }
+
     /**
      * The Handler that gets information back from the BluetoothChatService
      */
@@ -491,7 +492,7 @@ public class BluetoothChatFragment extends Fragment {
                     String readMessage = new String(readBuf, 0, msg.arg1);
                     if (simulateClickButton(readMessage)) {
                         // it's a command, do not print it.
-                        soundPool.play(1,1, 1, 0, 0, 1);
+                        playPressSound();
                     } else {
                         mConversationArrayAdapter.add(mConnectedDeviceName + ":  " + readMessage);
                     }
@@ -510,6 +511,39 @@ public class BluetoothChatFragment extends Fragment {
                                 Toast.LENGTH_SHORT).show();
                     }
                     break;
+                case Constants.MESSAGE_FLIP_TRAFFIC_LIGHT:
+                    Log.i(TAG, "Receive flip message");
+                    boolean ok = true;
+                    switch (msg.arg1) {
+                        case TrafficLightEngine.STATE_RED:
+                            ok = ok && simulateClickButton("Red_Unpressed");
+                            ok = ok && simulateClickButton("Yellow_Pressed");
+                            ok = ok && simulateClickButton("Green_Pressed");
+                            if (ok) {
+                                Log.i(TAG, "Simulate red light successfully");
+                                playPressSound();
+                            }
+                            break;
+                        case TrafficLightEngine.STATE_YELLOW:
+                            ok = ok && simulateClickButton("Red_Pressed");
+                            ok = ok && simulateClickButton("Yellow_Unpressed");
+                            ok = ok && simulateClickButton("Green_Pressed");
+                            if (ok) {
+                                Log.i(TAG, "Simulate yellow light successfully");
+                                playPressSound();
+                            }
+                            break;
+                        case TrafficLightEngine.STATE_GREEN:
+                            ok = ok && simulateClickButton("Red_Pressed");
+                            ok = ok && simulateClickButton("Yellow_Pressed");
+                            ok = ok && simulateClickButton("Green_Unpressed");
+                            if (ok) {
+                                Log.i(TAG, "Simulate green light successfully");
+                                playPressSound();
+                            }
+                            break;
+                    }
+
             }
         }
     };

@@ -7,7 +7,7 @@ import android.util.Log;
 public class TTSProvider {
     private final String TAG = "TTSProvider";
 
-    private TextToSpeech mSpeech = null;
+    private TextToSpeech mSpeech;
 
     float mVoiceSpeed = 0.01f;
 

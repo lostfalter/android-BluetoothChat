@@ -14,10 +14,10 @@ public class VoiceService {
     public static final int PRESS = 3;
 
     private TTSProvider mTTSProvider = null;
-    private SoundPool mSoundPool = null;
+    private SoundPool mSoundPool;
     private final String TAG = "VoiceService";
-    private boolean mUseTTS = false;
-    private Context mContext = null;
+    private boolean mUseTTS;
+    private Context mContext;
 
     class SoundId {
         int RED = 0;
@@ -58,34 +58,34 @@ public class VoiceService {
     }
 
     public void play(int type) {
-        switch (type) {
-            case RED_LIGHT:
-                if (mUseTTS) {
-                    mTTSProvider.prompt("红---灯");
-                } else {
-                    playRedLightWav();
-                }
-                break;
-            case YELLOW_LIGHT:
-                if (mUseTTS) {
-                    mTTSProvider.prompt("黄---灯");
-                } else {
-                    playYellowLightWav();
-                }
-                break;
-            case GREEN_LIGHT:
-                if (mUseTTS) {
-                    mTTSProvider.prompt("绿---灯");
-                } else {
-                    playGreenLightWav();
-                }
-                break;
-            case PRESS:
-                playPressEffect();
-                break;
-            default:
-                break;
-        }
+//        switch (type) {
+//            case RED_LIGHT:
+//                if (mUseTTS) {
+//                    mTTSProvider.prompt("红---灯");
+//                } else {
+//                    playRedLightWav();
+//                }
+//                break;
+//            case YELLOW_LIGHT:
+//                if (mUseTTS) {
+//                    mTTSProvider.prompt("黄---灯");
+//                } else {
+//                    playYellowLightWav();
+//                }
+//                break;
+//            case GREEN_LIGHT:
+//                if (mUseTTS) {
+//                    mTTSProvider.prompt("绿---灯");
+//                } else {
+//                    playGreenLightWav();
+//                }
+//                break;
+//            case PRESS:
+//                playPressEffect();
+//                break;
+//            default:
+//                break;
+//        }
     }
 
     public void stop() {
@@ -96,22 +96,18 @@ public class VoiceService {
     }
 
     private void playPressEffect() {
-//        mSoundPool.load(mContext, R.raw.trigger,1);
         mSoundPool.play(mSoundId.PRESS,1, 1, 0, 0, 1);
     }
 
     private void playRedLightWav() {
-//        int soundId = mSoundPool.load(mContext, R.raw.red_light,1);
         mSoundPool.play(mSoundId.RED,1, 1, 0, 0, 1);
     }
 
     private void playYellowLightWav() {
-//        int soundId = mSoundPool.load(mContext, R.raw.yellow_light,1);
         mSoundPool.play(mSoundId.YELLOW,1, 1, 0, 0, 1);
     }
 
     private void playGreenLightWav() {
-//        int soundId = mSoundPool.load(mContext, R.raw.green_light,1);
         mSoundPool.play(mSoundId.GREEN,1, 1, 0, 0, 1);
     }
 }

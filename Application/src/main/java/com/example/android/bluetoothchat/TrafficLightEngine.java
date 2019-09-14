@@ -49,6 +49,10 @@ public class TrafficLightEngine {
         int nextState = getNextState();
         switchToState(nextState);
 
+        notifyCurrentState();
+    }
+
+    private void notifyCurrentState() {
         Log.i(TAG, "Switch to " + getStateString(mState));
         mHandler.obtainMessage(Constants.MESSAGE_FLIP_TRAFFIC_LIGHT, mState, -1).sendToTarget();
     }

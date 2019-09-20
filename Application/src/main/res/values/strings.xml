@@ -34,7 +34,7 @@
     <string name="button_scan">扫描设备</string>
 
     <!-- Options Menu -->
-    <string name="secure_connect">连接一个设备 - 安全</string>
+    <string name="secure_connect">连接一个设备</string>
     <string name="insecure_connect">连接一个设备 - 非安全</string>
     <string name="discoverable">让自己被可被发现</string>
     <string name="red">Red</string>

@@ -6,28 +6,22 @@
             android:selectAllOnFocus="true"
             android:singleLine="true"
             android:title="红灯时长"
-            android:key="edit_text_red_light_time"
+            android:key="red_light_time"
             android:defaultValue="30"
-            android:inputType="number"
-            android:summary="30 秒"
-            android:enabled="true" />
+            android:inputType="number" />
         <EditTextPreference
             android:selectAllOnFocus="true"
             android:singleLine="true"
             android:title="黄灯时长"
-            android:key="edit_text_yellow_light_time"
+            android:key="yellow_light_time"
             android:defaultValue="5"
-            android:inputType="number"
-            android:summary="5 秒"
-            android:enabled="true" />
+            android:inputType="number" />
         <EditTextPreference
             android:selectAllOnFocus="true"
             android:singleLine="true"
             android:title="绿灯时长"
-            android:key="edit_text_green_light_time"
+            android:key="green_light_time"
             android:defaultValue="30"
-            android:inputType="number"
-            android:summary="30 秒"
-            android:enabled="true" />
+            android:inputType="number" />
     </PreferenceCategory>
 </PreferenceScreen >

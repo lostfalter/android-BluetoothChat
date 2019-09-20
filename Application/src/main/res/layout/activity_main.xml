@@ -99,9 +99,9 @@
             android:id="@+id/red_light_setting_line"
             android:gravity="center"
             android:orientation="horizontal"
-            android:layout_height="50dp"
+            android:layout_height="40dp"
             android:layout_width="match_parent"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent">
         <TextView
@@ -149,9 +149,9 @@
             android:id="@+id/yellow_light_setting_line"
             android:orientation="horizontal"
             android:gravity="center"
-            android:layout_height="50dp"
+            android:layout_height="40dp"
             android:layout_width="match_parent"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent">
             <TextView
@@ -199,9 +199,9 @@
             android:id="@+id/green_light_setting_line"
             android:orientation="horizontal"
             android:gravity="center"
-            android:layout_height="50dp"
+            android:layout_height="40dp"
             android:layout_width="match_parent"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent">
             <TextView

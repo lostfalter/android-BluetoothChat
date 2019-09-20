@@ -21,25 +21,18 @@ import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
-import android.media.AudioAttributes;
-import android.media.AudioManager;
-import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -80,9 +73,9 @@ public class BluetoothChatFragment extends Fragment {
     private EditText mYellowLightTimeoutEditText;
     private EditText mGreenLightTimeoutEditText;
 
-    private final int mDefaultRedLigthTimeout = 30;
-    private final int mDefaultYellowLigthTimeout = 5;
-    private final int mDefaultGreenLigthTimeout = 30;
+    private final int mDefaultRedLightTimeout = 30;
+    private final int mDefaultYellowLightTimeout = 5;
+    private final int mDefaultGreenLightTimeout = 30;
 
     /**
      * Name of the connected device
@@ -163,6 +156,14 @@ public class BluetoothChatFragment extends Fragment {
 
         if (mVoiceService != null) {
             mVoiceService.stop();
+        }
+
+        if (mTrafficLightTimer != null) {
+            mTrafficLightTimer = null;
+        }
+
+        if (mTrafficLightEngine != null) {
+            mTrafficLightEngine = null;
         }
     }
 
@@ -254,9 +255,9 @@ public class BluetoothChatFragment extends Fragment {
         mRestoreDefaultButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mRedLightTimeoutEditText.setText(Integer.toString(mDefaultRedLigthTimeout));
-                mYellowLightTimeoutEditText.setText(Integer.toString(mDefaultYellowLigthTimeout));
-                mGreenLightTimeoutEditText.setText(Integer.toString(mDefaultGreenLigthTimeout));
+                mRedLightTimeoutEditText.setText(Integer.toString(mDefaultRedLightTimeout));
+                mYellowLightTimeoutEditText.setText(Integer.toString(mDefaultYellowLightTimeout));
+                mGreenLightTimeoutEditText.setText(Integer.toString(mDefaultGreenLightTimeout));
             }
         });
 
@@ -501,14 +502,17 @@ public class BluetoothChatFragment extends Fragment {
             case TrafficLightTimer.STATE_RED:
                 mTrafficLightEngine.setState(TrafficLightEngine.STATE_RED);
                 mRemainTimeText.setText(Integer.toString(remainTime));
+                sendMessageWithoutToast("#RED#");
                 break;
             case TrafficLightTimer.STATE_YELLOW:
                 mTrafficLightEngine.setState(TrafficLightEngine.STATE_YELLOW);                mRemainTimeText.setText(Integer.toString(remainTime));
                 mRemainTimeText.setText(Integer.toString(remainTime));
+                sendMessageWithoutToast("#YELLOW#");
                 break;
             case TrafficLightTimer.STATE_GREEN:
                 mTrafficLightEngine.setState(TrafficLightEngine.STATE_GREEN);
                 mRemainTimeText.setText(Integer.toString(remainTime));
+                sendMessageWithoutToast("#GREEN#");
                 break;
             default:
                 break;
@@ -519,17 +523,17 @@ public class BluetoothChatFragment extends Fragment {
         switch (type) {
             case TrafficLightEngine.STATE_RED:
                 mTrafficLightImage.setImageResource(R.drawable.red_light);
-                mVoiceService.play(VoiceService.RED_LIGHT);
+//                mVoiceService.play(VoiceService.RED_LIGHT);
                 Log.i(TAG, "Simulate red light successfully");
                 break;
             case TrafficLightEngine.STATE_YELLOW:
                 mTrafficLightImage.setImageResource(R.drawable.yellow_light);
-                mVoiceService.play(VoiceService.YELLOW_LIGHT);
+//                mVoiceService.play(VoiceService.YELLOW_LIGHT);
                 Log.i(TAG, "Simulate yellow light successfully");
                 break;
             case TrafficLightEngine.STATE_GREEN:
                 mTrafficLightImage.setImageResource(R.drawable.green_light);
-                mVoiceService.play(VoiceService.GREEN_LIGHT);
+//                mVoiceService.play(VoiceService.GREEN_LIGHT);
                 Log.i(TAG, "Simulate green light successfully");
                 break;
             default:
@@ -584,7 +588,7 @@ public class BluetoothChatFragment extends Fragment {
                     if (isCommandMessage(writeMessage)) {
                         // command message, do not print it
                     } else {
-                        mConversationArrayAdapter.add("Me:  " + writeMessage);
+                        // mConversationArrayAdapter.add("Me:  " + writeMessage);
                     }
                     break;
                 case Constants.MESSAGE_READ:
@@ -678,15 +682,21 @@ public class BluetoothChatFragment extends Fragment {
                 startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_SECURE);
                 return true;
             }
-            case R.id.insecure_connect_scan: {
-                // Launch the DeviceListActivity to see devices and do scan
-                Intent serverIntent = new Intent(getActivity(), DeviceListActivity.class);
-                startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_INSECURE);
-                return true;
-            }
-            case R.id.discoverable: {
-                // Ensure this device is discoverable by others
-                ensureDiscoverable();
+//            case R.id.insecure_connect_scan: {
+//                // Launch the DeviceListActivity to see devices and do scan
+//                Intent serverIntent = new Intent(getActivity(), DeviceListActivity.class);
+//                startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_INSECURE);
+//                return true;
+//            }
+//            case R.id.discoverable: {
+//                // Ensure this device is discoverable by others
+//                ensureDiscoverable();
+//                return true;
+//            }
+
+            case R.id.settings: {
+                Intent intent =  new Intent(getActivity(), SettingsActivity.class);
+                startActivity(intent);
                 return true;
             }
         }

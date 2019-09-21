@@ -23,5 +23,17 @@
             android:key="green_light_time"
             android:defaultValue="30"
             android:inputType="number" />
+
+
+    </PreferenceCategory>
+    <PreferenceCategory android:title="重置">
+        <com.example.android.bluetoothchat.RestoreDefaultDialog
+            android:key="resetQuests"
+            android:dialogIcon="@drawable/ic_action_restore_default"
+            android:title="重置红绿灯周期"
+            android:summary="将红绿灯时长周期重置回默认值"
+            android:dialogMessage="是否确定将红绿灯时长周期重置回默认值？"
+            android:positiveButtonText="恢复默认周期"
+            android:negativeButtonText="取消"/>
     </PreferenceCategory>
 </PreferenceScreen >

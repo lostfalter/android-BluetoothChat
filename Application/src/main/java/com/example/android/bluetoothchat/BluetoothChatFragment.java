@@ -21,9 +21,11 @@ import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -57,25 +59,11 @@ public class BluetoothChatFragment extends Fragment {
 
     // Layout Views
     private ListView mConversationView;
-//    private EditText mOutEditText;
-//    private Button mSendButton;
 
-//    private Button redButton;
-//    private Button yellowButton;
-//    private Button greenButton;
     private ImageView mTrafficLightImage;
     private TextView mRemainTimeText;
 
-    private Button mRestoreDefaultButton;
     private Button mResetButton;
-
-    private EditText mRedLightTimeoutEditText;
-    private EditText mYellowLightTimeoutEditText;
-    private EditText mGreenLightTimeoutEditText;
-
-    private final int mDefaultRedLightTimeout = 30;
-    private final int mDefaultYellowLightTimeout = 5;
-    private final int mDefaultGreenLightTimeout = 30;
 
     /**
      * Name of the connected device
@@ -247,20 +235,6 @@ public class BluetoothChatFragment extends Fragment {
         mTrafficLightImage = activity.findViewById(R.id.traffic_light_image);
         mRemainTimeText = activity.findViewById(R.id.label_remained_time_number);
 
-        mRedLightTimeoutEditText = activity.findViewById(R.id.red_light_time_number);
-        mYellowLightTimeoutEditText = activity.findViewById(R.id.yellow_light_time_number);
-        mGreenLightTimeoutEditText = activity.findViewById(R.id.green_light_time_number);
-
-        mRestoreDefaultButton = activity.findViewById(R.id.button_reset_default_time_setting);
-        mRestoreDefaultButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mRedLightTimeoutEditText.setText(Integer.toString(mDefaultRedLightTimeout));
-                mYellowLightTimeoutEditText.setText(Integer.toString(mDefaultYellowLightTimeout));
-                mGreenLightTimeoutEditText.setText(Integer.toString(mDefaultGreenLightTimeout));
-            }
-        });
-
         mResetButton = activity.findViewById(R.id.button_apply_time_setting);
         mResetButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -271,12 +245,11 @@ public class BluetoothChatFragment extends Fragment {
                 mTrafficLightEngine.stop();
                 mTrafficLightEngine = null;
 
-                int redLightTime = Integer.parseInt(
-                    mRedLightTimeoutEditText.getText().toString());
-                int yellowLightTime = Integer.parseInt(
-                    mYellowLightTimeoutEditText.getText().toString());
-                int greenLightTime = Integer.parseInt(
-                    mGreenLightTimeoutEditText.getText().toString());
+                SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                int redLightTime = Integer.parseInt(sp.getString("red_light_time", "130"));
+                int yellowLightTime = Integer.parseInt(sp.getString("yellow_light_time", "10"));
+                int greenLightTime = Integer.parseInt(sp.getString("green_light_time", "110"));
+
                 mTrafficLightTimer = new TrafficLightTimer(
                     mHandler, redLightTime, yellowLightTime, greenLightTime);
                 mTrafficLightEngine = new TrafficLightEngine(mHandler);
@@ -287,14 +260,6 @@ public class BluetoothChatFragment extends Fragment {
     private void setupSoundEffect() {
         FragmentActivity activity = getActivity();
         mVoiceService = new VoiceService(activity, false);
-
-//        redButton = activity.findViewById(R.id.button_red);
-//        yellowButton = activity.findViewById(R.id.button_yellow);
-//        greenButton = activity.findViewById(R.id.button_green);
-//
-//        addSoundEffectToButton(redButton);
-//        addSoundEffectToButton(yellowButton);
-//        addSoundEffectToButton(greenButton);
     }
 
 //    private void addSoundEffectToButton(Button bt) {

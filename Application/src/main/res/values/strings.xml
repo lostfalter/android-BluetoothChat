@@ -39,4 +39,8 @@
     <string name="discoverable">让自己被可被发现</string>
     <string name="red">Red</string>
 
+
+    <!--    Preference-->
+    <string name="preference">Preference</string>
+
 </resources>
